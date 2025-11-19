@@ -336,68 +336,68 @@ export default function RenderingComparison() {
             </Card>
 
             {/* サーバーとの会話イメージ */}
-            <Card className="bg-slate-900 text-slate-200">
-              <h3 className="text-xs font-bold text-slate-400 uppercase mb-3">サーバーとのやりとり</h3>
+            <Card>
+              <h3 className="text-xs font-bold text-slate-500 uppercase mb-3">サーバーとのやりとり</h3>
               <div className="font-mono text-xs space-y-3">
                 {mode === 'mpa' && (
                   <>
-                    <div className="flex gap-2 opacity-70">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「トップページをください」</span>
                     </div>
-                    <div className="flex gap-2 opacity-70">
-                      <span className="text-green-400">Server:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-green-600 font-bold">Server:</span>
                       <span>「HTMLを作りました。どうぞ（全送付）」</span>
                     </div>
-                    <div className="border-t border-slate-700 my-2"></div>
-                    <div className="flex gap-2">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="border-t border-slate-100 my-2"></div>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「次は会社概要をください」</span>
                     </div>
-                    <div className="flex gap-2">
-                      <span className="text-green-400">Server:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-green-600 font-bold">Server:</span>
                       <span>「HTMLを作りました。どうぞ（また全送付）」</span>
                     </div>
                   </>
                 )}
                 {mode === 'spa' && (
                   <>
-                    <div className="flex gap-2">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「サイトを開きたいです」</span>
                     </div>
-                    <div className="flex gap-2">
-                      <span className="text-green-400">Server:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-green-600 font-bold">Server:</span>
                       <span>「空のHTMLとJSを送ります。後は自分で描いてね」</span>
                     </div>
-                    <div className="flex gap-2 text-yellow-400">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="flex gap-2 text-amber-600 font-bold">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「(JS実行中...クルクル...) 描画完了！」</span>
                     </div>
-                    <div className="border-t border-slate-700 my-2"></div>
-                    <div className="flex gap-2 opacity-70">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="border-t border-slate-100 my-2"></div>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「会社概要のデータだけちょーだい」</span>
                     </div>
                   </>
                 )}
                 {mode === 'ssr' && (
                   <>
-                    <div className="flex gap-2">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「サイトを開きたいです」</span>
                     </div>
-                    <div className="flex gap-2">
-                      <span className="text-green-400">Server:</span>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-green-600 font-bold">Server:</span>
                       <span>「(サーバー側で描画完了) 完成品のHTMLを送ります！」</span>
                     </div>
-                    <div className="flex gap-2 text-emerald-400">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="flex gap-2 text-emerald-600 font-bold">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「すぐ表示できました！」</span>
                     </div>
-                    <div className="border-t border-slate-700 my-2"></div>
-                     <div className="flex gap-2 opacity-70">
-                      <span className="text-blue-400">Browser:</span>
+                    <div className="border-t border-slate-100 my-2"></div>
+                     <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
                       <span>「次は会社概要のデータだけちょーだい」</span>
                     </div>
                   </>
