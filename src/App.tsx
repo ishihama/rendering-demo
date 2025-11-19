@@ -9,7 +9,8 @@ import {
   User, 
   Smartphone, 
   Zap, 
-  MousePointerClick 
+  MousePointerClick,
+  FileCode // SSG用に追加
 } from 'lucide-react';
 
 // カードコンポーネントのProps型定義
@@ -25,8 +26,8 @@ const Card: React.FC<CardProps> = ({ children, className = "" }) => (
   </div>
 );
 
-// レンダリングモードの型定義
-type RenderMode = 'mpa' | 'spa' | 'ssr';
+// レンダリングモードの型定義 (SSGを追加)
+type RenderMode = 'mpa' | 'spa' | 'ssr' | 'ssg';
 type PageType = 'home' | 'about' | 'products';
 
 export default function RenderingComparison() {
@@ -62,6 +63,11 @@ export default function RenderingComparison() {
       setTimeout(() => {
         setIsInitialLoading(false);
       }, 600); // サーバー処理のみで速い
+    } else if (mode === 'ssg') {
+      // SSG: 事前に作られたHTMLをCDNから返すため、最も速い
+      setTimeout(() => {
+        setIsInitialLoading(false);
+      }, 300); // 爆速
     }
   };
 
@@ -76,8 +82,11 @@ export default function RenderingComparison() {
         setPage(targetPage);
         setWhiteOut(false);
       }, 800);
+    } else if (mode === 'ssg') {
+      // SSG: 事前生成済みなので即座に表示（ローディングなし）
+      setPage(targetPage);
     } else {
-      // SPA & SSR (Modern): 遷移はAPIでデータ取得（共通してスムーズ）
+      // SPA & SSR: APIでデータ取得するラグを再現
       setIsNavigating(true);
       setPage(targetPage);
       setTimeout(() => {
@@ -88,8 +97,9 @@ export default function RenderingComparison() {
 
   // コンテンツのレンダリング
   const renderContent = () => {
-    // SPA/SSRの遷移中のローディング表示（データ取得中）
-    if ((mode === 'spa' || mode === 'ssr') && isNavigating) {
+    // Modern方式の遷移中のローディング表示（データ取得中）
+    // SSGの場合はnavigateToでisNavigatingがtrueにならないためここは通らない
+    if ((mode !== 'mpa') && isNavigating) {
       return (
         <div className="h-64 flex flex-col items-center justify-center text-slate-400 animate-pulse">
           <RefreshCw className="w-8 h-8 animate-spin mb-2" />
@@ -109,7 +119,7 @@ export default function RenderingComparison() {
       );
     }
 
-    // MPAのホワイトアウト（またはSSRの初期サーバー待ち）
+    // MPAのホワイトアウト（またはSSR/SSGの初期サーバー待ち）
     if (isInitialLoading || whiteOut) {
       return null; // 何も表示されない
     }
@@ -119,14 +129,18 @@ export default function RenderingComparison() {
         return (
           <div className="space-y-4 animate-in fade-in duration-300">
             <div className={`h-32 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-md ${
-              mode === 'mpa' ? 'bg-slate-600' : mode === 'spa' ? 'bg-indigo-500' : 'bg-emerald-500'
+              mode === 'mpa' ? 'bg-slate-600' : 
+              mode === 'spa' ? 'bg-indigo-500' : 
+              mode === 'ssr' ? 'bg-emerald-500' : 'bg-orange-500'
             }`}>
               トップページ
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="h-24 bg-slate-100 rounded-lg p-4">
                 <div className={`w-12 h-12 bg-white rounded-full mb-2 flex items-center justify-center ${
-                  mode === 'mpa' ? 'text-slate-600' : mode === 'spa' ? 'text-indigo-500' : 'text-emerald-500'
+                  mode === 'mpa' ? 'text-slate-600' : 
+                  mode === 'spa' ? 'text-indigo-500' : 
+                  mode === 'ssr' ? 'text-emerald-500' : 'text-orange-500'
                 }`}>
                   <Coffee size={20} />
                 </div>
@@ -134,7 +148,9 @@ export default function RenderingComparison() {
               </div>
               <div className="h-24 bg-slate-100 rounded-lg p-4">
                 <div className={`w-12 h-12 bg-white rounded-full mb-2 flex items-center justify-center ${
-                  mode === 'mpa' ? 'text-slate-600' : mode === 'spa' ? 'text-indigo-500' : 'text-emerald-500'
+                  mode === 'mpa' ? 'text-slate-600' : 
+                  mode === 'spa' ? 'text-indigo-500' : 
+                  mode === 'ssr' ? 'text-emerald-500' : 'text-orange-500'
                 }`}>
                   <Layout size={20} />
                 </div>
@@ -150,7 +166,9 @@ export default function RenderingComparison() {
         return (
           <div className="space-y-4 animate-in fade-in duration-300">
             <div className={`h-32 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-md ${
-              mode === 'mpa' ? 'bg-slate-500' : mode === 'spa' ? 'bg-indigo-400' : 'bg-emerald-400'
+              mode === 'mpa' ? 'bg-slate-500' : 
+              mode === 'spa' ? 'bg-indigo-400' : 
+              mode === 'ssr' ? 'bg-emerald-400' : 'bg-orange-400'
             }`}>
               会社概要
             </div>
@@ -166,7 +184,9 @@ export default function RenderingComparison() {
         return (
            <div className="space-y-4 animate-in fade-in duration-300">
             <div className={`h-32 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-md ${
-               mode === 'mpa' ? 'bg-slate-400' : mode === 'spa' ? 'bg-indigo-300' : 'bg-emerald-300'
+               mode === 'mpa' ? 'bg-slate-400' : 
+               mode === 'spa' ? 'bg-indigo-300' : 
+               mode === 'ssr' ? 'bg-emerald-300' : 'bg-orange-300'
             }`}>
               商品一覧
             </div>
@@ -188,6 +208,18 @@ export default function RenderingComparison() {
     }
   };
 
+  // 現在のモードに応じた色を取得するヘルパー
+  const getModeColorClass = (m: RenderMode) => {
+    switch(m) {
+      case 'mpa': return 'slate';
+      case 'spa': return 'indigo';
+      case 'ssr': return 'emerald';
+      case 'ssg': return 'orange';
+    }
+  };
+
+  const currentColor = getModeColorClass(mode);
+
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
       <div className="max-w-6xl mx-auto">
@@ -196,7 +228,7 @@ export default function RenderingComparison() {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">レンダリング方式による体験の違い</h1>
           <p className="text-slate-600">
-            以下の手順で、MPA・SPA・SSRの動きを比較してください
+            以下の手順で、MPA・SPA・SSR・SSGの動きを比較してください
           </p>
         </div>
 
@@ -213,9 +245,10 @@ export default function RenderingComparison() {
           </div>
 
           <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 inline-flex flex-wrap justify-center gap-2">
+            {/* MPA Button */}
             <button
               onClick={() => setMode('mpa')}
-              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[150px] cursor-pointer relative ${
+              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[140px] cursor-pointer relative ${
                 mode === 'mpa'
                   ? 'bg-slate-700 text-white shadow-md scale-100 ring-2 ring-slate-200 ring-offset-2'
                   : 'text-slate-500 hover:bg-slate-50 hover:shadow-sm hover:-translate-y-0.5 border border-transparent hover:border-slate-100'
@@ -227,14 +260,14 @@ export default function RenderingComparison() {
                 <div className="text-[10px] font-normal opacity-80">従来型 (Legacy)</div>
               </div>
               {mode === 'mpa' && (
-                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">
-                  Selected
-                </div>
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">Selected</div>
               )}
             </button>
+
+            {/* SPA Button */}
             <button
               onClick={() => setMode('spa')}
-              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[150px] cursor-pointer relative ${
+              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[140px] cursor-pointer relative ${
                 mode === 'spa'
                   ? 'bg-indigo-600 text-white shadow-md scale-100 ring-2 ring-indigo-200 ring-offset-2'
                   : 'text-slate-500 hover:bg-indigo-50 hover:shadow-sm hover:-translate-y-0.5 border border-transparent hover:border-indigo-100'
@@ -246,14 +279,14 @@ export default function RenderingComparison() {
                 <div className="text-[10px] font-normal opacity-80">ブラウザ完結型</div>
               </div>
                {mode === 'spa' && (
-                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">
-                  Selected
-                </div>
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">Selected</div>
               )}
             </button>
+
+            {/* SSR Button */}
             <button
               onClick={() => setMode('ssr')}
-              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[150px] cursor-pointer relative ${
+              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[140px] cursor-pointer relative ${
                 mode === 'ssr'
                   ? 'bg-emerald-600 text-white shadow-md scale-100 ring-2 ring-emerald-200 ring-offset-2'
                   : 'text-slate-500 hover:bg-emerald-50 hover:shadow-sm hover:-translate-y-0.5 border border-transparent hover:border-emerald-100'
@@ -265,9 +298,26 @@ export default function RenderingComparison() {
                 <div className="text-[10px] font-normal opacity-80">サーバー生成型</div>
               </div>
                {mode === 'ssr' && (
-                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">
-                  Selected
-                </div>
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">Selected</div>
+              )}
+            </button>
+
+            {/* SSG Button (New) */}
+            <button
+              onClick={() => setMode('ssg')}
+              className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[140px] cursor-pointer relative ${
+                mode === 'ssg'
+                  ? 'bg-orange-500 text-white shadow-md scale-100 ring-2 ring-orange-200 ring-offset-2'
+                  : 'text-slate-500 hover:bg-orange-50 hover:shadow-sm hover:-translate-y-0.5 border border-transparent hover:border-orange-100'
+              }`}
+            >
+              <FileCode size={18} />
+              <div className="text-left">
+                <div>SSG</div>
+                <div className="text-[10px] font-normal opacity-80">事前ビルド型</div>
+              </div>
+               {mode === 'ssg' && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">Selected</div>
               )}
             </button>
           </div>
@@ -280,12 +330,15 @@ export default function RenderingComparison() {
             
             {/* 選択中のモードの詳細解説 */}
             <Card className={`border-t-4 transition-colors duration-300 ${
-              mode === 'mpa' ? 'border-t-slate-600' : mode === 'spa' ? 'border-t-indigo-500' : 'border-t-emerald-500'
+              mode === 'mpa' ? 'border-t-slate-600' : 
+              mode === 'spa' ? 'border-t-indigo-500' : 
+              mode === 'ssr' ? 'border-t-emerald-500' : 'border-t-orange-500'
             }`}>
               <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
                 {mode === 'mpa' && 'MPA (Multi-Page Application)'}
                 {mode === 'spa' && 'SPA (Single Page Application / CSR)'}
                 {mode === 'ssr' && 'SSR (Server-Side Rendering)'}
+                {mode === 'ssg' && 'SSG (Static Site Generation)'}
               </h2>
               
               <div className="space-y-4 text-sm">
@@ -295,6 +348,7 @@ export default function RenderingComparison() {
                     {mode === 'mpa' && 'ページ遷移のたびにサーバーから新しいHTMLを丸ごと読み込み直します。最も伝統的でシンプルな仕組みです。'}
                     {mode === 'spa' && '最初に「空のHTML」と「JS」を読み込み、ブラウザ上で画面を組み立てます。一度読み込めばサクサク動きますが、最初は待たされます。'}
                     {mode === 'ssr' && 'サーバー上で「完成したHTML」を作ってから送ります。SPAの快適な操作性と、MPAの初期表示の速さ(SEO)を両立します。'}
+                    {mode === 'ssg' && 'ビルド時に「HTML」を完全に作っておき、CDNから配信します。SSRよりもさらに初期表示が高速ですが、リアルタイムなデータ反映には工夫が必要です。'}
                   </p>
                 </div>
                 
@@ -305,6 +359,7 @@ export default function RenderingComparison() {
                       {mode === 'mpa' && '普通'}
                       {mode === 'spa' && '遅い (JS実行待ち)'}
                       {mode === 'ssr' && '速い (HTML到着済)'}
+                      {mode === 'ssg' && '爆速 (事前生成済)'}
                     </div>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-lg">
@@ -313,6 +368,7 @@ export default function RenderingComparison() {
                       {mode === 'mpa' && '遅い (全リロード)'}
                       {mode === 'spa' && '速い (部分的更新)'}
                       {mode === 'ssr' && '速い (部分的更新)'}
+                      {mode === 'ssg' && '爆速 (ローディング無)'}
                     </div>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-lg">
@@ -321,6 +377,7 @@ export default function RenderingComparison() {
                       {mode === 'mpa' && '強い'}
                       {mode === 'spa' && '工夫が必要'}
                       {mode === 'ssr' && '強い'}
+                      {mode === 'ssg' && '最強'}
                     </div>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-lg">
@@ -329,6 +386,7 @@ export default function RenderingComparison() {
                       {mode === 'mpa' && '低い'}
                       {mode === 'spa' && '低い (APIのみ)'}
                       {mode === 'ssr' && '高い (HTML生成)'}
+                      {mode === 'ssg' && '極小 (静的配信)'}
                     </div>
                   </div>
                 </div>
@@ -402,6 +460,31 @@ export default function RenderingComparison() {
                     </div>
                   </>
                 )}
+                {mode === 'ssg' && (
+                  <>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
+                      <span>「サイトを開きたいです」</span>
+                    </div>
+                    <div className="flex gap-2 text-slate-700">
+                      <span className="text-orange-600 font-bold">CDN:</span>
+                      <span>「作っておいたHTMLがあります！どうぞ！（即答）」</span>
+                    </div>
+                    <div className="flex gap-2 text-orange-600 font-bold">
+                      <span className="text-blue-600 font-bold">Browser:</span>
+                      <span>「一瞬で表示できました！」</span>
+                    </div>
+                    <div className="border-t border-slate-100 my-2"></div>
+                     <div className="flex gap-2 text-slate-700">
+                      <span className="text-blue-600 font-bold">Browser:</span>
+                      <span>「次は会社概要のページ（事前生成済）をください」</span>
+                    </div>
+                    <div className="flex gap-2 text-orange-600 font-bold">
+                      <span className="text-blue-600 font-bold">CDN:</span>
+                      <span>「はい、どうぞ！（即答）」</span>
+                    </div>
+                  </>
+                )}
               </div>
             </Card>
           </div>
@@ -463,7 +546,9 @@ export default function RenderingComparison() {
                   </div>
 
                   <div className={`font-bold text-xl flex items-center gap-2 ${
-                    mode === 'mpa' ? 'text-slate-700' : mode === 'spa' ? 'text-indigo-600' : 'text-emerald-600'
+                    mode === 'mpa' ? 'text-slate-700' : 
+                    mode === 'spa' ? 'text-indigo-600' : 
+                    mode === 'ssr' ? 'text-emerald-600' : 'text-orange-600'
                   }`}>
                     <Globe className="w-6 h-6" />
                     <span>DemoSite</span>
