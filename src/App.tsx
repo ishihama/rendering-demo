@@ -208,17 +208,9 @@ export default function RenderingComparison() {
     }
   };
 
-  // 現在のモードに応じた色を取得するヘルパー
-  const getModeColorClass = (m: RenderMode) => {
-    switch(m) {
-      case 'mpa': return 'slate';
-      case 'spa': return 'indigo';
-      case 'ssr': return 'emerald';
-      case 'ssg': return 'orange';
-    }
-  };
-
-  const currentColor = getModeColorClass(mode);
+  // 修正: 未使用のヘルパー関数と変数を削除しました
+  // const getModeColorClass = ... 
+  // const currentColor = ...
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
