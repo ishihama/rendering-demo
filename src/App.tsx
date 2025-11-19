@@ -37,7 +37,6 @@ export default function RenderingComparison() {
   // シミュレーション用ステート
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(false); // 初回ロード中か
   const [isNavigating, setIsNavigating] = useState<boolean>(false);     // ページ遷移中か
-  const [showSpinner, setShowSpinner] = useState<boolean>(false);       // スピナーを表示するか
   const [whiteOut, setWhiteOut] = useState<boolean>(false);             // 画面を白くするか（MPA用）
 
   // 初回アクセス（リロード）のシミュレーション
@@ -55,9 +54,7 @@ export default function RenderingComparison() {
       }, 1000);
     } else if (mode === 'spa') {
       // SPA: 空のHTMLが来てからJSで描画するため、最初はスピナーが出る
-      setShowSpinner(true);
       setTimeout(() => {
-        setShowSpinner(false);
         setIsInitialLoading(false);
       }, 1500); // JSダウンロードと実行で少し遅い
     } else if (mode === 'ssr') {
